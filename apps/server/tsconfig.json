@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "es2020",                                /* Use modern ECMAScript features for emitted JavaScript. */
+    "module": "esnext",                                /* Use the latest module system. */
+    "moduleResolution": "node",                       /* Specify module resolution strategy. */
+    "resolveJsonModule": true,                        /* Allow importing .json files. */
+    "rootDir": "./src",                               /* Root directory of source files. */
+    "outDir": "./dist",                               /* Directory for emitted output. */
+    "esModuleInterop": true,                          /* Enable compatibility with CommonJS modules. */
+    "forceConsistentCasingInFileNames": true,         /* Ensure consistent casing in imports. */
+
+    /* Emit */
+    "removeComments": true,                           /* Remove comments in the emitted code. */
+
+    /* Type Checking */
+    "strict": false,                                  /* Disable strict type-checking. */
+    "noImplicitAny": false,                           /* Allow variables to have 'any' type by default. */
+    "skipLibCheck": true,                             /* Skip type checking for declaration files. */
+
+    /* Features for Easier Interop */
+    "allowSyntheticDefaultImports": true,             /* Allow default imports for modules without a default export. */
+    "isolatedModules": false                          /* Disable module isolation for compatibility. */
+  },
+  "include": ["src/**/*"],                            /* Include all source files in the src folder. */
+  "exclude": ["node_modules", "dist"]                 /* Exclude the output and dependency folders. */
+}
