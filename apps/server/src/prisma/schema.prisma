@@ -33,3 +33,9 @@ model Upload {
   parent     Upload?  @relation("UploadParent", fields: [parentId], references: [id])
   children   Upload[] @relation("UploadParent")
 }
+
+
+
+
+
+
