@@ -1,24 +1,32 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { 
-  FolderPlus, 
-  Upload, 
-  Grid2x2, 
-  List 
-} from "lucide-react"
-import { 
+import { FolderPlus, Upload, Grid2x2, List } from "lucide-react"
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-export function FileToolbar() {
+
+interface FileToolbarProps {
+  onCreateFolder: (folderName: string) => void
+}
+
+export function FileToolbar({ onCreateFolder }: FileToolbarProps) {
+  const handleNewFolder = () => {
+    const folderName = prompt("Enter folder name:")
+    if (folderName) {
+      onCreateFolder(folderName.trim())
+    }
+  }
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleNewFolder}>
           <FolderPlus className="h-4 w-4 mr-2" />
           New Folder
         </Button>

@@ -28,6 +28,7 @@ const initialFiles: { [key: string]: File[] } = {
 export function FileExplorer() {
   const [currentPath, setCurrentPath] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [fileStructure, setFileStructure] = useState(initialFiles)
   const [files, setFiles] = useState<File[]>(initialFiles[""])
 
   // Handle file filtering based on search query
@@ -41,7 +42,7 @@ export function FileExplorer() {
   const onNavigate = (path: string[]) => {
     const pathKey = path.join("/")
     setCurrentPath(path)
-    setFiles(initialFiles[pathKey] || [])
+    setFiles(fileStructure[pathKey] || [])
   }
 
   const onBack = () => {
@@ -49,6 +50,20 @@ export function FileExplorer() {
       const parentPath = currentPath.slice(0, -1)
       onNavigate(parentPath)
     }
+  }
+
+  const handleCreateFolder = (folderName: string) => {
+    const pathKey = currentPath.join("/")
+    const newFolder: File = {
+      id: Date.now().toString(),
+      name: folderName,
+      type: "folder",
+    }
+
+    // Update file structure and current files
+    const updatedFiles = [...(fileStructure[pathKey] || []), newFolder]
+    setFileStructure({ ...fileStructure, [pathKey]: updatedFiles })
+    setFiles(updatedFiles)
   }
 
   return (
@@ -61,7 +76,7 @@ export function FileExplorer() {
           <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
-      <FileToolbar />
+      <FileToolbar onCreateFolder={handleCreateFolder} />
       <FileUpload currentPath={currentPath.join("/")} />
       <FileList
         currentPath={currentPath}
