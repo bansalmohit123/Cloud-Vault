@@ -6,6 +6,7 @@ import { FileUpload } from "./file-upload"
 import { BreadcrumbNav } from "./breadcrumb-nav"
 import { FileToolbar } from "./file-toolbar"
 import { SearchBar } from "./search-bar"
+import { DragProvider } from "./drag-provider"
 
 type File = { id: string; name: string; type: "folder" | "file" }
 
@@ -66,7 +67,37 @@ export function FileExplorer() {
     setFiles(updatedFiles)
   }
 
+  const handleMove = async (sourceId: string, targetPath: string[], sourcePath: string[]) => {
+    // Update UI optimistically
+    const sourcePathKey = sourcePath.join('/')
+    const targetPathKey = targetPath.join('/')
+    
+    const sourceFiles = [...(fileStructure[sourcePathKey] || [])]
+    const targetFiles = [...(fileStructure[targetPathKey] || [])]
+    
+    const movedItem = sourceFiles.find(f => f.id === sourceId)
+    if (movedItem) {
+      // Remove from source
+      const newSourceFiles = sourceFiles.filter(f => f.id !== sourceId)
+      // Add to target
+      const newTargetFiles = [...targetFiles, movedItem]
+      
+      setFileStructure({
+        ...fileStructure,
+        [sourcePathKey]: newSourceFiles,
+        [targetPathKey]: newTargetFiles
+      })
+
+      if (sourcePathKey === currentPath.join('/')) {
+        setFiles(newSourceFiles)
+      } else if (targetPathKey === currentPath.join('/')) {
+        setFiles(newTargetFiles)
+      }
+    }
+  }
+
   return (
+    <DragProvider>
     <div className="space-y-4">
       <div className="flex items-center space-x-4">
         <div className="flex-1">
@@ -83,7 +114,9 @@ export function FileExplorer() {
         files={filteredFiles} // Use filtered files for display
         onNavigate={onNavigate}
         onBack={onBack}
+        onMove={handleMove}
       />
     </div>
+    </DragProvider>
   )
 }
