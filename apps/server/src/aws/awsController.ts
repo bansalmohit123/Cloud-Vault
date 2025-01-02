@@ -1,3 +1,4 @@
+
 // import { GetObjectCommand, S3Client, PutObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 // import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 // require('dotenv').config();
@@ -8,6 +9,7 @@
 //         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
 //     }
 //  });
+
 
 // export async function getObjectURL(key: string){
 //     const command = new GetObjectCommand({
@@ -38,6 +40,7 @@
 //     });
 //     const result = await s3.send(command);
 //     console.log(result);
+
     
 //  }
 
@@ -49,5 +52,3 @@
 //     // await listObjects();
 // }
 // init();
- 
-    
