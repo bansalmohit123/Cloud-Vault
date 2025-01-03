@@ -1,52 +1,131 @@
-"use server";
-import axios from "axios";
+'use server';
+import { prisma} from "./prisma";
 
-const SERVER_URL = process.env.SERVER_URL;
+export const createFolder = async (name: string, email: string, parentId: string | null) => {
+  if (!email) {
+    throw new Error("Email is required to create a folder.");
+  }
 
+  // Fetch user ID using the email
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
 
-export const createFolder = async (name: string, ownerId: string, parentId: string) => {
-    const response = await axios.post(
-        `${SERVER_URL}/createFolder`,
-        { name, ownerId, parentId }
-    );
-    return response.data;
+  if (!user) {
+    throw new Error("User with the provided email does not exist.");
+  }
+
+  return await prisma.folder.create({
+    data: {
+      name,
+      ownerId: user.id,
+      parentId,
+    },
+  });
 };
 
-
-export const uploadFile = async (name: string, type: string, size: number, ownerId: string, folderId: string, url: string) => {
-    const response = await axios.post(
-        `${SERVER_URL}/uploadFile`,
-        { name, type, size, ownerId, folderId, url }
-    );
-    return response.data;
+// Upload a file
+export const uploadFile = async (
+  name: string,
+  type: string,
+  size: number,
+  ownerId: string,
+  folderId: string,
+  url: string
+) => {
+  return await prisma.file.create({
+    data: {
+      name,
+      type,
+      size,
+      ownerId,
+      folderId,
+      url,
+    },
+  });
 };
 
+// Get a folder by ID
 export const getFolder = async (folderId: string) => {
-    const response = await axios.get(
-        `${SERVER_URL}/getFolder/${folderId}`
-    );
-    return response.data;
+  return await prisma.folder.findUnique({
+    where: { id: folderId },
+    include: {
+      subfolders: true,
+      files: true,
+    },
+  });
 };
 
-export const getFolders = async () => {
-    const response = await axios.get(
-        `${SERVER_URL}/getFolders`
-    );
-    return response.data;
+// Get all folders by owner email
+export const getAllFoldersByOwner = async (email: string) => {
+  // Fetch user ID using the email
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new Error("User with the provided email does not exist.");
+  }
+
+  return await prisma.folder.findMany({
+    where: { ownerId: user.id },
+    include: {
+      subfolders: true,
+      files: true,
+    },
+  });
 };
 
-export const Move = async (srcid: string, destinationid: string) => {
-    const response = await axios.post(
-        `${SERVER_URL}/Move`,
-        { srcid, destinationid }
-    );
-    return response.data;
+// Move a folder or file
+export const moveItem = async (sourceId: string, destinationId: string | null) => {
+  try {
+    // Check if the source is a file
+    const file = await prisma.file.findUnique({ where: { id: sourceId } });
+    if (file) {
+      return await prisma.file.update({
+        where: { id: sourceId },
+        data: { folderId: destinationId },
+      });
+    }
+
+    // Check if the source is a folder
+    const folder = await prisma.folder.findUnique({ where: { id: sourceId } });
+    if (folder) {
+      const isCircular = await checkCircularReference(sourceId, destinationId);
+      if (isCircular) {
+        throw new Error('Cannot move folder into its own subfolder');
+      }
+
+      return await prisma.folder.update({
+        where: { id: sourceId },
+        data: { parentId: destinationId },
+      });
+    }
+
+    throw new Error('Source not found');
+  } catch (error) {
+    console.error('Move Item Error:', error);
+    throw new Error('Failed to move item');
+  }
 };
 
-export const getAllFoldersByOwner = async (ownerId: string) => {
-    const response = await axios.get(
-        `${SERVER_URL}/getAllFoldersByOwner`,
-        { params: { ownerId } }
-    );
-    return response.data;
+
+// Helper: Check for circular references
+const checkCircularReference = async (sourceId: string, destinationId: string | null): Promise<boolean> => {
+  if (!destinationId) return false; // Moving to root is always valid
+
+  let currentId = destinationId;
+
+  while (currentId) {
+    if (currentId === sourceId) return true; // Circular reference detected
+    const parentFolder = await prisma.folder.findUnique({
+      where: { id: currentId },
+      select: { parentId: true },
+    });
+    currentId = parentFolder?.parentId as string;
+  }
+
+  return false; // No circular reference found
 };

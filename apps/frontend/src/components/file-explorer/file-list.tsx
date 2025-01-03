@@ -5,6 +5,7 @@ import { DraggableItem } from './draggable-item'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
+import { moveItem } from "@/lib/folder"
 
 interface File {
   id: string
@@ -17,30 +18,47 @@ interface FileListProps {
   files: File[]
   onNavigate: (path: string[]) => void
   onBack: () => void
-  onMove: (sourceId: string, targetPath: string[], sourcePath: string[]) => void
+  onMove: (sourceId: string, targetPath: string[], srcPath : string[]) => void
 }
 
 export function FileList({ 
-  currentPath, 
+  currentPath,
   files, 
   onNavigate, 
-  onBack,
+  onBack, 
   onMove 
 }: FileListProps) {
+  console.log('currentPath', currentPath)
+  console.log('files', files)
   const { toast } = useToast()
   const isRoot = currentPath.length === 0
 
-  const handleMove = async (sourceId: string, targetPath: string[], sourcePath: string[]) => {
+  const handleMove = async (
+    sourceId: string,
+    targetId: string,
+    srcPath: string[],
+    destPath: string[]
+  ) => {
+    console.log('sourceId', sourceId)
+    console.log('targetId', targetId)
+    console.log('srcPath', srcPath)
+    console.log('destPath', destPath)
+  
     try {
-      const response = await fetch('/api/move', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sourceId, targetPath })
-      })
-
-      if (!response.ok) throw new Error('Move failed')
-
-      onMove(sourceId, targetPath, sourcePath)
+      // Call moveItem with only the IDs
+      try{
+      const response = await moveItem(sourceId, targetId)
+      }catch(error){
+        console.error(error)
+        toast({
+          title: 'Error',
+          description: 'Failed to move item',
+          variant: 'destructive',
+        })
+      }
+  
+      // Call onMove with all required parameters
+      onMove(sourceId, destPath, srcPath)
       
       toast({
         title: 'Success',
@@ -55,6 +73,7 @@ export function FileList({
       })
     }
   }
+  
 
   return (
     <div>
@@ -82,7 +101,7 @@ export function FileList({
                 name={item.name}
                 path={currentPath}
                 onNavigate={() => onNavigate([...currentPath, item.name])}
-                onMove={handleMove}
+                onMove={(sourceId) => handleMove(sourceId, item.id,currentPath, [...currentPath, item.name])}
               />
             ) : (
               <DraggableItem

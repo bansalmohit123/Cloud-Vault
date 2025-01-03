@@ -1,4 +1,5 @@
-// lib/uploadUtils.ts
+// // lib/uploadUtils.ts
+'use server';
 
 import axios from "axios";
 import { generateSinglePresignedUrl, startMultipartUpload, generatePresignedUrls, completeMultipartUpload } from "@/lib/api";
@@ -50,6 +51,7 @@ export const uploadFile = async (file: File) => {
       await Promise.all(uploadPromises);
 
       await completeMultipartUpload(file.name, uploadId, parts);
+      
       alert("File uploaded successfully!");
     }
   } catch (error) {
