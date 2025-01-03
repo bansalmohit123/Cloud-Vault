@@ -1,28 +1,44 @@
-// FileUpload.tsx
-
 "use client";
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload } from "lucide-react";
-import { uploadFile } from "@/lib/upload"; // Import the uploadFile function
+import { uploadFile } from "@/lib/upload";
+import { useToast } from "@/hooks/use-toast";
 
 interface FileUploadProps {
   currentPath: string;
+  onFileUploaded: (file: any) => void;
 }
 
-export function FileUpload({ currentPath }: FileUploadProps) {
+export function FileUpload({ currentPath, onFileUploaded }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const { toast } = useToast();
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         setIsUploading(true);
-        uploadFile(acceptedFiles[0])
-          .finally(() => setIsUploading(false)); // Handle uploading state
+        try {
+          const fileRecord = await uploadFile(acceptedFiles[0], currentPath);
+          onFileUploaded(fileRecord);
+          toast({
+            title: "Success",
+            description: "File uploaded successfully",
+          });
+        } catch (error) {
+          console.error("Upload error:", error);
+          toast({
+            title: "Error",
+            description: "Failed to upload file",
+            variant: "destructive",
+          });
+        } finally {
+          setIsUploading(false);
+        }
       }
     },
-    [currentPath]
+    [currentPath, onFileUploaded, toast]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

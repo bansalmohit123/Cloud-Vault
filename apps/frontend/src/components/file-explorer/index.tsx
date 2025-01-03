@@ -104,6 +104,24 @@ export function FileExplorer() {
     }
   };
 
+  const handleFileUploaded = (fileRecord: any) => {
+    const newFile: File = {
+      id: fileRecord.id,
+      name: fileRecord.name,
+      type: "file",
+    };
+
+    // Update current view
+    setFiles(prev => [...prev, newFile]);
+
+    // Update file structure
+    const currentPathKey = currentPath.join("/");
+    setFileStructure(prev => ({
+      ...prev,
+      [currentPathKey]: [...(prev[currentPathKey] || []), newFile as File],
+    }));
+  };
+
   const handleCreateFolder = async (folderName: string) => {
     try {
       if (!session?.user?.email) {
@@ -156,8 +174,15 @@ export function FileExplorer() {
             <SearchBar onSearch={setSearchQuery} />
           </div>
         </div>
-        <FileToolbar onCreateFolder={handleCreateFolder} />
-        <FileUpload currentPath={currentPath.join("/")} />
+        <FileToolbar 
+          currentPath={currentPath.join("/")}
+          onCreateFolder={handleCreateFolder}
+          onFileUploaded={handleFileUploaded}
+        />
+        <FileUpload 
+          currentPath={currentPath.join("/")} 
+          onFileUploaded={handleFileUploaded}
+        />
         <FileList
           currentPath={currentPath}
           files={filteredFiles}
