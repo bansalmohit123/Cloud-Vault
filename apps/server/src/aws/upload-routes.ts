@@ -1,13 +1,10 @@
 import express from "express";
-import { checkAPIStatus, generateSinglePresignedUrl, startMultipartUpload, generatePresignedUrls, completeMultipartUpload } from "./upload-handler";
+import { generatePresignedUrls, completeUpload } from "./upload-handler";
 
 const router = express.Router();
 
-// Define routes
-router.get("/", checkAPIStatus);
-router.post("/generate-single-presigned-url", generateSinglePresignedUrl);
-router.post("/start-multipart-upload", startMultipartUpload);
-router.post("/generate-presigned-url", generatePresignedUrls);
-router.post("/complete-multipart-upload", completeMultipartUpload);
+
+router.post("/presigned-urls", generatePresignedUrls);
+router.post("/complete-upload", completeUpload);
 
 export default router;

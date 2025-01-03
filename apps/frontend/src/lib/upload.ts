@@ -1,8 +1,5 @@
-'use server';
-
+"use server";
 import axios from "axios";
-import { generateSinglePresignedUrl, startMultipartUpload, generatePresignedUrls, completeMultipartUpload } from "@/lib/api";
-import { uploadFile as createFileRecord } from "@/lib/folder";
 import { auth } from "../../auth";
 import { prisma } from "./prisma";
 
@@ -19,7 +16,6 @@ export const uploadFile = async (file: File, currentPath: string) => {
       throw new Error("User not authenticated");
     }
 
-    // Get user ID
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { id: true },
@@ -29,12 +25,12 @@ export const uploadFile = async (file: File, currentPath: string) => {
       throw new Error("User not found");
     }
 
-    // Find current folder ID based on path
+    // Determine folder ID from the path
     let currentFolderId = null;
     if (currentPath) {
-      const pathSegments = currentPath.split('/').filter(Boolean);
+      const pathSegments = currentPath.split("/").filter(Boolean);
       let parentId = null;
-      
+
       for (const segment of pathSegments) {
         const folder: { id: string } | null = await prisma.folder.findFirst({
           where: {
@@ -49,56 +45,62 @@ export const uploadFile = async (file: File, currentPath: string) => {
       currentFolderId = parentId;
     }
 
-    let fileUrl = '';
-    
-    if (file.size < 10 * 1024 * 1024) {
-      // Single-part upload
-      const url = await generateSinglePresignedUrl(file.name);
-      await axios.put(url, file, {
-        headers: { "Content-Type": file.type },
-      });
-      fileUrl = url.split('?')[0]; // Get the base URL without query parameters
-    } else {
-      // Multipart upload
-      const uploadId = await startMultipartUpload(file.name, file.type);
-      const chunkSize = 10 * 1024 * 1024;
-      const totalChunks = Math.ceil(file.size / chunkSize);
-      const presignedUrls = await generatePresignedUrls(file.name, uploadId, totalChunks);
-      
-      const uploadPromises = [];
-      const parts: Part[] = [];
+    const { data: { presignedUrls, uploadId } } = await axios.post(`${process.env.SERVER_URL}/api/presigned-urls`, {
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      folderId: currentFolderId,
+    });
 
-      for (let i = 0; i < totalChunks; i++) {
-        const start = i * chunkSize;
-        const end = Math.min(start + chunkSize, file.size);
-        const chunk = file.slice(start, end);
+    const chunkSize = 10 * 1024 * 1024; // 10 MB
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    const uploadPromises = [];
+    const parts: Part[] = [];
 
-        uploadPromises.push(
-          axios.put(presignedUrls[i], chunk, {
-            headers: { "Content-Type": file.type },
-          }).then((res) => {
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      const chunk = file.slice(start, end);
+
+      uploadPromises.push(
+        axios
+          .put(presignedUrls[i], chunk, { headers: { "Content-Type": file.type } })
+          .then((res) => {
             parts.push({
               ETag: res.headers.etag,
               PartNumber: i + 1,
             });
           })
-        );
-      }
-
-      await Promise.all(uploadPromises);
-      const result = await completeMultipartUpload(file.name, uploadId, parts);
-      fileUrl = result.Location || presignedUrls[0].split('?')[0];
+      );
     }
 
-    // Create file record in database
-    const fileRecord = await createFileRecord(
-      file.name,
-      file.type,
-      file.size,
-      user.id,
-      currentFolderId || '',
-      fileUrl
-    );
+    await Promise.all(uploadPromises);
+
+    if (uploadId) {
+      // Complete multipart upload
+      const result = await axios.post(`${process.env.SERVER_URL}/api/complete-upload`, {
+        fileName: file.name,
+        uploadId,
+        parts,
+        folderId: currentFolderId,
+      });
+      if(result?.data?.error) {
+        throw new Error("Error generating presigned URLs");
+      }
+    }
+
+
+    const fileUrl = presignedUrls[0].split("?")[0]; // Final URL
+    const fileRecord = await prisma.file.create({
+      data: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        ownerId: user.id,
+        folderId: currentFolderId || "",
+        url: fileUrl,
+      },
+    });
 
     return fileRecord;
   } catch (error) {

@@ -8,6 +8,7 @@ export const generateSinglePresignedUrl = async (fileName: string) => {
         `${SERVER_URL}/generate-single-presigned-url`,
         { fileName }
     );
+    console.log('response', response)
     return response.data.url;
 };
 
@@ -16,6 +17,7 @@ export const startMultipartUpload = async (fileName: string, contentType: string
         `${SERVER_URL}/start-multipart-upload`,
         { fileName, contentType }
     );
+    console.log('response', response)
     return response.data.uploadId;
 };
 

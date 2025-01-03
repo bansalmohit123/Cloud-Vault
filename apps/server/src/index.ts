@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", router);
+app.use("/api", router);
 // app.use('/aws', awsRoutes);
 app.use('/', folderrouter);
 

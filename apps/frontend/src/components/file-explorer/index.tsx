@@ -10,6 +10,7 @@ import { FileToolbar } from "./file-toolbar";
 import { SearchBar } from "./search-bar";
 import { DragProvider } from "./drag-provider";
 import { getAllFoldersByOwner, createFolder } from "@/lib/folder";
+import { url } from "inspector";
 
 type File = { 
   id: string; 
@@ -17,6 +18,7 @@ type File = {
   type: "folder" | "file"; 
   parentId?: string | null; 
   subfolders?: File[]; 
+  url? : string | null;
 };
 
 export function FileExplorer() {
@@ -44,6 +46,7 @@ export function FileExplorer() {
             type: "folder",
             parentId: folder.parentId,
             subfolders: [],
+            url : folder.url || null,
           });
         });
 
@@ -109,6 +112,7 @@ export function FileExplorer() {
       id: fileRecord.id,
       name: fileRecord.name,
       type: "file",
+      url : fileRecord.url
     };
 
     // Update current view
@@ -160,8 +164,32 @@ export function FileExplorer() {
   };
 
   const handleMove = async (sourceId: string, targetPath: string[], sourcePath: string[]) => {
-    // ... rest of the handleMove function remains the same
-  };
+      // Update UI optimistically
+      const sourcePathKey = sourcePath.join('/')
+      const targetPathKey = targetPath.join('/')
+      
+      const sourceFiles = [...(fileStructure[sourcePathKey] || [])]
+      const targetFiles = [...(fileStructure[targetPathKey] || [])]
+      
+      const movedItem = sourceFiles.find(f => f.id === sourceId)
+      if (movedItem) {
+        // Remove from source
+        const newSourceFiles = sourceFiles.filter(f => f.id !== sourceId)
+        // Add to target
+        const newTargetFiles = [...targetFiles, movedItem]
+        
+        setFileStructure({
+          ...fileStructure,
+          [sourcePathKey]: newSourceFiles,
+          [targetPathKey]: newTargetFiles
+        })
+        if (sourcePathKey === currentPath.join('/')) {
+          setFiles(newSourceFiles);
+        } else if (targetPathKey === currentPath.join('/')) {
+          setFiles(newTargetFiles);
+        }
+      }
+    };
 
   return (
     <DragProvider>
