@@ -18,7 +18,7 @@ type File = {
   type: "folder" | "file"; 
   parentId?: string | null; 
   subfolders?: File[]; 
-  url? : string | null;
+  url? : string | undefined;
 };
 
 export function FileExplorer() {
