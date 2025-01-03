@@ -11,6 +11,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+
+
 const s3Client = new S3Client({
   region: "us-east-1",
   credentials: {
@@ -36,7 +38,7 @@ export const generatePresignedUrls = async (req, res) => {
       const presignedUrl = await getSignedUrl(
         s3Client,
         new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME,
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: key,
         }),
         { expiresIn: 3600 }
@@ -45,7 +47,7 @@ export const generatePresignedUrls = async (req, res) => {
     } else {
       // Multipart upload
       const startCommand = new CreateMultipartUploadCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: key,
       });
       const { UploadId } = await s3Client.send(startCommand);
@@ -84,7 +86,7 @@ export const completeUpload = async (req, res) => {
     }
 
     const completeCommand = new CompleteMultipartUploadCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: folderId ? `${folderId}/${fileName}` : fileName,
       UploadId: uploadId,
       MultipartUpload: { Parts: parts },
