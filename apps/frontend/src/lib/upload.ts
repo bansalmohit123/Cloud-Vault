@@ -91,15 +91,24 @@ export const uploadFile = async (file: File, currentPath: string) => {
 
 
     const fileUrl = presignedUrls[0].split("?")[0]; // Final URL
+    if(currentFolderId === null){
+      currentFolderId = "";
+    }
+
+    const fileData: any = {
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      ownerId: user.id,
+      url: fileUrl,
+    };
+
+    if (currentFolderId) {
+      fileData.folderId = currentFolderId;
+    }
+
     const fileRecord = await prisma.file.create({
-      data: {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        ownerId: user.id,
-        folderId: currentFolderId || "",
-        url: fileUrl,
-      },
+      data: fileData,
     });
 
     return fileRecord;

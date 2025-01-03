@@ -28,8 +28,8 @@ export function FileList({
   onBack, 
   onMove 
 }: FileListProps) {
-  console.log('currentPath', currentPath)
-  console.log('files', files)
+  // console.log('currentPath', currentPath)
+  // console.log('files', files)
   const { toast } = useToast()
   const isRoot = currentPath.length === 0
 

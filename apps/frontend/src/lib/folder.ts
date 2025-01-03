@@ -57,7 +57,6 @@ export const getFolder = async (folderId: string) => {
   });
 };
 
-// Get all folders by owner email
 export const getAllFoldersByOwner = async (email: string) => {
   // Fetch user ID using the email
   const user = await prisma.user.findUnique({
@@ -69,14 +68,53 @@ export const getAllFoldersByOwner = async (email: string) => {
     throw new Error("User with the provided email does not exist.");
   }
 
-  return await prisma.folder.findMany({
+  // Fetch folders along with their subfolders and files
+  const folders = await prisma.folder.findMany({
     where: { ownerId: user.id },
     include: {
       subfolders: true,
       files: true,
     },
   });
+
+  // Fetch files with folderId null (root-level files)
+  const rootFiles = await prisma.file.findMany({
+    where: {
+      folderId: null,
+      ownerId: user.id,
+    },
+  });
+
+  // Append root files to the final response
+  console.log('folders', folders)
+  console.log('rootFiles', rootFiles)
+  return {
+    folders,
+    rootFiles,
+  };
 };
+
+
+// // Get all folders by owner email
+// export const getAllFoldersByOwner = async (email: string) => {
+//   // Fetch user ID using the email
+//   const user = await prisma.user.findUnique({
+//     where: { email },
+//     select: { id: true },
+//   });
+
+//   if (!user) {
+//     throw new Error("User with the provided email does not exist.");
+//   }
+
+//   return await prisma.folder.findMany({
+//     where: { ownerId: user.id },
+//     include: {
+//       subfolders: true,
+//       files: true,
+//     },
+//   });
+// };
 
 // Move a folder or file
 export const moveItem = async (sourceId: string, destinationId: string | null) => {

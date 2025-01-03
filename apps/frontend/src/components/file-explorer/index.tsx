@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { FileList } from "./file-list";
@@ -31,49 +31,76 @@ export function FileExplorer() {
   if (!session) {
     return redirect("/auth");
   }
-
   useEffect(() => {
-    const fetchFolders = async () => {
-      try {
-        const data = await getAllFoldersByOwner(session?.user?.email as string);
-        
-        // Create a map of folders by ID for easier lookup
-        const folderMap = new Map();
-        data.forEach((folder: any) => {
-          folderMap.set(folder.id, {
-            id: folder.id,
-            name: folder.name,
-            type: "folder",
-            parentId: folder.parentId,
-            subfolders: [],
-            url : folder.url || null,
+  const fetchFolders = async () => {
+    try {
+      const data = await getAllFoldersByOwner(session?.user?.email as string);
+  
+      const folderMap = new Map();
+  
+      // Process folders
+      data.folders.forEach((item: any) => {
+        folderMap.set(item.id, {
+          id: item.id,
+          name: item.name,
+          type: "folder",
+          parentId: item.parentId,
+          subfolders: [],
+        });
+      });
+  
+      // Add files to their respective folders
+      data.folders.forEach((folder: any) => {
+        const folderObj = folderMap.get(folder.id);
+        if (folder.files.length > 0) {
+          folder.files.forEach((file: any) => {
+            const fileObj = {
+              id: file.id,
+              name: file.name,
+              type: "file",
+              parentId: folder.id,
+              url: file.url, // Assuming file.url exists
+            };
+            folderObj.subfolders.push(fileObj);
           });
-        });
-
-        // Build the folder hierarchy
-        const rootFolders: File[] = [];
-        data.forEach((folder: any) => {
-          const folderObj = folderMap.get(folder.id);
-          if (folder.parentId) {
-            const parentFolder = folderMap.get(folder.parentId);
-            if (parentFolder) {
-              parentFolder.subfolders.push(folderObj);
-            }
-          } else {
-            rootFolders.push(folderObj);
+        }
+      });
+  
+      // Build the folder hierarchy
+      const rootFolders: any[] = [];
+      data.folders.forEach((folder: any) => {
+        const folderObj = folderMap.get(folder.id);
+        if (folder.parentId) {
+          const parentFolder = folderMap.get(folder.parentId);
+          if (parentFolder) {
+            parentFolder.subfolders.push(folderObj);
           }
-        });
-
-        // Initialize the file structure with root folders
-        setFileStructure({ "": rootFolders });
-        setFiles(rootFolders);
-      } catch (error) {
-        console.error("Failed to fetch folder structure:", error);
-      }
-    };
-
-    fetchFolders();
-  }, [session?.user?.email]);
+        } else {
+          rootFolders.push(folderObj);
+        }
+      });
+  
+      // Add root files to the root folder structure
+      const rootFiles = data.rootFiles.map((file: any) => ({
+        id: file.id,
+        name: file.name,
+        type: "file",
+        parentId: null,
+        url: file.url,
+      }));
+  
+      const combinedRoot = [...rootFolders, ...rootFiles];
+  
+      setFileStructure({ "": combinedRoot });
+      setFiles(combinedRoot);
+    } catch (error) {
+      console.error("Failed to fetch folder structure:", error);
+    }
+  };
+  fetchFolders();
+}, [session]);
+  
+  
 
   const filteredFiles = useMemo(() => {
     if (!searchQuery) return files;
