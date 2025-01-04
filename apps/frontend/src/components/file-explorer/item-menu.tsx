@@ -55,15 +55,13 @@ export function ItemMenu({ type, onShare, onDelete, onDownload, onRename }: Item
           )}
           Rename
         </DropdownMenuItem>
-        {type === "file" && (
-          <DropdownMenuItem onClick={(e) => {
-            e.stopPropagation();
-            onDownload?.();
-          }}>
-            <Download className="mr-2 h-4 w-4" />
-            Download
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={(e) => {
+          e.stopPropagation();
+          onDownload?.();
+        }}>
+          <Download className="mr-2 h-4 w-4" />
+          Download
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="text-destructive focus:text-destructive"
           onClick={(e) => {

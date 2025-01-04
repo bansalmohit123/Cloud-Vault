@@ -61,7 +61,17 @@ export function DraggableItem({ id, name, type, path, url, onDelete, onRename }:
 
   const handleDownload = () => {
     if (url) {
-      window.open(url, '_blank');
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = ""; // Add custom filename if required
+      a.click();  
+    }
+    else{
+      toast({
+        title: "Error",
+        description: "Failed to download file",
+        variant: "destructive",
+      });
     }
   };
 

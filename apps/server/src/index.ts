@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 // import awsRoutes from './aws/awsRoutes';
 import router from './aws/upload-routes';
-import folderrouter from './aws/folder-routes';
 import featuresrouter from './aws/features-routes';
+import { downloadFolderHandler } from './aws/awsController';
 import bodyParser from 'body-parser';
 const app = express();
 const port = 3001;
@@ -27,8 +27,8 @@ app.use((req, res, next) => {
 
 app.use("/api", router);
 // app.use('/aws', awsRoutes);
-app.use('/', folderrouter);
 app.use('/', featuresrouter);
+app.use('/api/folder/download/:folderId', downloadFolderHandler);
 
 
 app.get('/', (req, res) => {

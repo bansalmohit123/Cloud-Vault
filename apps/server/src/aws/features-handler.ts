@@ -2,17 +2,10 @@ import  prisma  from "../prisma";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3Client, DeleteObjectCommand, DeleteObjectsCommand, ListObjectsV2Command, CopyObjectCommand } from "@aws-sdk/client-s3";
  import dotenv from "dotenv";
+import s3Client from "../s3client";
 
 dotenv.config();
 
-const s3Client = new S3Client({
-    region: "us-east-1",
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-    },
-    endpoint: process.env.S3_ENDPOINT,
-  });
   export const renameFileHandler = async (req, res) => {
     const { oldKey, newName } = req.body;
 

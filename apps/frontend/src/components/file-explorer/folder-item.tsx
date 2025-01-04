@@ -5,6 +5,7 @@ import { Folder } from "lucide-react";
 import { ItemMenu } from "./item-menu";
 import { RenameDialog } from "./rename-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { downloadFolder } from "@/lib/file-actions";
 
 interface FolderItemProps {
   id: string;
@@ -68,6 +69,47 @@ export function FolderItem({
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      // Notify the user the download has started
+      toast({
+        title: "Folder download",
+        description: "Your folder is being prepared for download...",
+      });
+
+      const response = await downloadFolder(id);
+      if(response === null) {
+        throw new Error("Failed to download folder");
+      }
+      
+      const url = window.URL.createObjectURL(response);
+  
+      // Trigger the download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${name}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  
+      // Revoke the blob URL to release memory
+      window.URL.revokeObjectURL(url);
+  
+      toast({
+        title: "Folder download",
+        description: "Your folder has been downloaded successfully!",
+      });
+    } catch (error) {
+      console.error("Error downloading folder:", error);
+      toast({
+        title: "Folder download",
+        description: "Failed to download the folder. Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+
   // Combine drag and drop refs
   const ref = (el: HTMLDivElement) => {
     dragRef(el);
@@ -92,6 +134,7 @@ export function FolderItem({
           onShare={handleShare}
           onDelete={onDelete}
           onRename={() => setIsRenaming(true)}
+          onDownload={handleDownload}
         />
       </div>
 

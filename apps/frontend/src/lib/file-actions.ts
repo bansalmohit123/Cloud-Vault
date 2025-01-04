@@ -1,4 +1,5 @@
 "use server";
+import { ok } from "assert";
 import { prisma } from "./prisma";
 
 
@@ -82,7 +83,7 @@ export const renamefile = async (fileId: string, name: string) => {
             // Step 4: Attempt S3 deletion for all files and the folder itself
             await Promise.all(
                 s3Keys.map(async (s3Key) => {
-                    const result = await fetch(`/api/deleteFile`, {
+                    const result = await fetch(`${process.env.SERVER_URL}/api/deleteFile`, {
                         method: "POST",
                         body: JSON.stringify({ s3Key }),
                         headers: {
@@ -98,7 +99,7 @@ export const renamefile = async (fileId: string, name: string) => {
     
             // Optionally, delete the folder itself in S3 if it's an actual directory object
             const folderS3Key = `${folderId}/`; // Folder key
-            const folderDeletion = await fetch(`/api/deleteFolder`, {
+            const folderDeletion = await fetch(`${process.env.SERVER_URL}/api/deleteFolder`, {
                 method: "POST",
                 body: JSON.stringify({ s3Key: folderS3Key }),
                 headers: {
@@ -130,4 +131,23 @@ export const renameFolder = async (folderId: string, name: string) => {
     }
     }
 
+
+export const downloadFolder = async (folderId: string) => {
+    try {
+        console.log("folderId", folderId);
+
+        // Fetch the ZIP file stream from the backend
+    const response = await fetch(`${process.env.SERVER_URL}/api/folder/download/${folderId}`);
+      if (!response.ok) {
+        throw new Error("Failed to download folder");
+      }
+      console.log("response", response);
+
+      return await response.blob();;
+    }
+    catch (error) {
+        console.error("Error downloading folder:", error);
+        return null;
+    }
+    }
 
