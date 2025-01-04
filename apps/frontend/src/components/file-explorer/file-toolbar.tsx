@@ -51,12 +51,29 @@ export function FileToolbar({ currentPath, onCreateFolder, onFileUploaded }: Fil
     if (e.target.files && e.target.files.length > 0) {
       setIsUploading(true)
       try {
-        const fileRecord = await uploadFile(e.target.files[0], currentPath)
-        onFileUploaded(fileRecord)
-        toast({
-          title: "Success",
-          description: "File uploaded successfully",
-        })
+        try {
+          const fileRecord = await uploadFile(e.target.files[0], currentPath);
+          onFileUploaded(fileRecord);
+          toast({
+            title: "Success",
+            description: "File uploaded successfully",
+          });
+          } catch (error) {
+          if (error instanceof Error && error.message === "Subscription required to upload files larger than 1 GB") {
+            toast({
+            title: "Subscription Required",
+            description: "Please subscribe to upload files larger than 1 GB",
+            variant: "default",
+            });
+          } else {
+            console.error("Upload error:", error);
+            toast({
+            title: "Error",
+            description: "Failed to upload file",
+            variant: "destructive",
+            });
+          }
+          }
       } catch (error) {
         console.error("Upload error:", error)
         toast({

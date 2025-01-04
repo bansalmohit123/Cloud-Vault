@@ -18,6 +18,7 @@ export function Header() {
         </Link>
         
         <div className="flex items-center space-x-4">
+          <Button onClick={() => window.location.href = '/premium'}>Go Premium</Button>
           <ModeToggle />
           {session ? (
             <>

@@ -25,6 +25,25 @@ export const uploadFile = async (file: File, currentPath: string) => {
       throw new Error("User not found");
     }
 
+    // Check subscription status and file size
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId: user.id },
+      select: { id: true }
+    });
+
+    if (!subscription) {
+      const totalUploadedSize = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { uploads: true },
+      });
+
+      const totalSize = (totalUploadedSize?.uploads || 0) + file.size;
+
+      if (totalSize > 1 * 1024 * 1024 * 1024) { // 1 GB in bytes
+        throw new Error("Subscription required to upload files larger than 1 GB");
+      }
+    }
+
     // Determine folder ID from the path
     let currentFolderId = null;
     if (currentPath) {
@@ -109,6 +128,15 @@ export const uploadFile = async (file: File, currentPath: string) => {
 
     const fileRecord = await prisma.file.create({
       data: fileData,
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        uploads: {
+          increment: file.size,
+        },
+      },
     });
 
     return fileRecord;
