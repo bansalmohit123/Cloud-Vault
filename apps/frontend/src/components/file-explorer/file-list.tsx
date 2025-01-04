@@ -29,6 +29,10 @@ interface FileListProps {
   onNavigate: (path: string[]) => void;
   onBack: () => void;
   onMove: (sourceId: string, targetPath: string[], srcPath: string[]) => void;
+  onDeleteFile: (fileId: string) => Promise<void>;
+  onRenameFile: (fileId: string, newName: string) => Promise<void>;
+  onDeleteFolder: (folderId: string) => Promise<void>;
+  onRenameFolder: (folderId: string, newName: string) => Promise<void>;
 }
 
 export function FileList({
@@ -37,6 +41,10 @@ export function FileList({
   onNavigate,
   onBack,
   onMove,
+  onDeleteFile,
+  onRenameFile,
+  onDeleteFolder,
+  onRenameFolder,
 }: FileListProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [numPages, setNumPages] = useState<number | null>(null);
@@ -48,7 +56,7 @@ export function FileList({
   const handleFileClick = (file: File) => {
     if (file.type === "file" && file.url) {
       setSelectedFile(file);
-      setPageNumber(1);
+      setPageNumber(1); // Reset to first page when opening a new file
       setScale(1);
     } else {
       toast({
@@ -164,30 +172,35 @@ export function FileList({
       {/* File/Folder List */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {files.map((item) => (
-          <div
+            <div
             key={item.id}
             className="group relative bg-card rounded-lg"
-            onClick={() => item.type === "file" && handleFileClick(item)}
-          >
+            onDoubleClick={() => item.type === "file" && handleFileClick(item)}
+            >
             {item.type === "folder" ? (
               <FolderItem
-                id={item.id}
-                name={item.name}
-                path={currentPath}
-                onNavigate={() => onNavigate([...currentPath, item.name])}
-                onMove={(sourceId) =>
-                  onMove(sourceId, currentPath, [...currentPath, item.name])
-                }
+              id={item.id}
+              name={item.name}
+              path={currentPath}
+              onNavigate={() => onNavigate([...currentPath, item.name])}
+              onMove={(sourceId) =>
+                onMove(sourceId, currentPath, [...currentPath, item.name])
+              }
+              onDelete={() => onDeleteFolder(item.id)}
+              onRename={(newName) => onRenameFolder(item.id, newName)}
               />
             ) : (
               <DraggableItem
-                id={item.id}
-                name={item.name}
-                type="file"
-                path={currentPath}
+              id={item.id}
+              name={item.name}
+              type="file"
+              path={currentPath}
+              url={item.url as string}
+              onDelete={() => onDeleteFile(item.id)}
+              onRename={(newName : any) => onRenameFile(item.id, newName)}
               />
             )}
-          </div>
+            </div>
         ))}
       </div>
     </div>
