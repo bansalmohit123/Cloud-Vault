@@ -11,6 +11,9 @@ import { SearchBar } from "./search-bar";
 import { DragProvider } from "./drag-provider";
 import { getAllFoldersByOwner, createFolder } from "@/lib/folder";
 import { url } from "inspector";
+import { deleteFile, renamefile, deleteFolder, renameFolder } from "@/lib/file-actions";
+import { useToast } from "@/hooks/use-toast";
+import { Toast } from "../ui/toast";
 
 type File = { 
   id: string; 
@@ -153,6 +156,105 @@ export function FileExplorer() {
     }));
   };
 
+  const handleDeleteFile = async (fileId: string) => {
+    const result = await deleteFile(fileId);
+    if (result.success) {
+      // Update the current view
+      setFiles(prev => prev.filter(file => file.id !== fileId));
+
+      // Update file structure
+      const currentPathKey = currentPath.join("/");
+      setFileStructure(prev => ({
+        ...prev,
+        [currentPathKey]: prev[currentPathKey].filter(file => file.id !== fileId),
+      }));
+
+      // Show a toast message
+      Toast({
+        title: "File deleted",
+      });
+    } else {
+      Toast({
+        title: "Error",
+      });
+    }
+  };
+
+  const handleRenameFile = async (fileId: string, newName: string) => {
+    const result = await renamefile(fileId, newName);
+    if (result) {
+      // Update the current view
+      setFiles(prev => prev.map(file => 
+        file.id === fileId ? { ...file, name: newName } : file
+      ));
+
+      // Update file structure
+      const currentPathKey = currentPath.join("/");
+      setFileStructure(prev => ({
+        ...prev,
+        [currentPathKey]: prev[currentPathKey].map(file =>
+          file.id === fileId ? { ...file, name: newName } : file
+        ),
+      }));
+
+      Toast({
+        title: "Success",
+      });
+    } else {
+      Toast({
+        title: "Error",
+      });
+    }
+  };
+
+  const handleDeleteFolder = async (folderId: string) => {
+    const result = await deleteFolder(folderId);
+    if (result.success) {
+      setFiles(prev => prev.filter(item => item.id !== folderId));
+      const currentPathKey = currentPath.join("/");
+      setFileStructure(prev => ({
+        ...prev,
+        [currentPathKey]: prev[currentPathKey].filter(item => item.id !== folderId),
+      }));
+      Toast({ title: "Success",});
+    } else {
+      Toast({
+        title: "Error",
+        
+      });
+    }
+  };
+
+  const handleRenameFolder = async (folderId: string, newName: string) => {
+    try {
+      const result = await fetch("/api/rename", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: folderId, newName, type: "folder" }),
+      });
+
+      if (result.ok) {
+        setFiles(prev => 
+          prev.map(item => item.id === folderId ? { ...item, name: newName } : item)
+        );
+        const currentPathKey = currentPath.join("/");
+        setFileStructure(prev => ({
+          ...prev,
+          [currentPathKey]: prev[currentPathKey].map(item =>
+            item.id === folderId ? { ...item, name: newName } : item
+          ),
+        }));
+        Toast({ title: "Success"});
+      } else {
+        throw new Error("Failed to rename folder");
+      }
+    } catch (error) {
+      Toast({
+        title: "Error",
+        
+      });
+    }
+  };
   const handleCreateFolder = async (folderName: string) => {
     try {
       if (!session?.user?.email) {
@@ -244,6 +346,10 @@ export function FileExplorer() {
           onNavigate={onNavigate}
           onBack={onBack}
           onMove={handleMove}
+          onDeleteFile={handleDeleteFile}
+          onRenameFile={handleRenameFile}
+          onDeleteFolder={handleDeleteFolder}
+          onRenameFolder={handleRenameFolder}
         />
       </div>
     </DragProvider>

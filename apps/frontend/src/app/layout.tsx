@@ -25,6 +25,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
+
         <AuthProvider>
           <SubscriptionProvider initialPremiumStatus={isPremium}>
             <ThemeProvider
