@@ -122,20 +122,26 @@ export function FolderItem({
         ref={ref}
         onClick={onNavigate}
         className={`
-          group relative flex items-center space-x-2 p-2 rounded cursor-pointer
-          ${isDragging ? "opacity-50" : "opacity-100"}
-          ${isOver ? "bg-primary/20" : "hover:bg-accent"}
+          group relative flex items-center space-x-3 p-4 rounded-md cursor-pointer
+          transition-all duration-200 ease-in-out
+          bg-gradient-to-r from-gray-900 to-gray-800
+          border border-gray-700 hover:border-blue-500
+          shadow-lg hover:shadow-blue-500/20
+          ${isDragging ? "opacity-50 scale-95" : "opacity-100"}
+          ${isOver ? "bg-primary/20 border-primary" : "hover:bg-gray-800"}
         `}
       >
-        <Folder className="h-5 w-5 text-blue-500" />
-        <span className="truncate">{name}</span>
-        <ItemMenu
-          type="folder"
-          onShare={handleShare}
-          onDelete={onDelete}
-          onRename={() => setIsRenaming(true)}
-          onDownload={handleDownload}
-        />
+        <Folder className="h-6 w-6 text-blue-400 flex-shrink-0" />
+        <span className="truncate text-gray-200 text-lg font-semibold">{name}</span>
+        <div className="absolute right-4 top-[20%] transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <ItemMenu
+            type="folder"
+            onShare={handleShare}
+            onDelete={onDelete}
+            onRename={() => setIsRenaming(true)}
+            onDownload={handleDownload}
+          />
+        </div>
       </div>
 
       <RenameDialog

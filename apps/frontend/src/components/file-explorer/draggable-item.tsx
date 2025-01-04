@@ -79,20 +79,29 @@ export function DraggableItem({ id, name, type, path, url, onDelete, onRename }:
     <>
       <div
         ref={dragRef as any}
-        className={`group relative flex items-center space-x-2 p-2 rounded cursor-move
-          ${isDragging ? "opacity-50" : "opacity-100"}
-          hover:bg-accent`}
+        className={`
+          group relative flex items-center space-x-3 p-4 rounded-md cursor-move
+          transition-all duration-200 ease-in-out
+          bg-gradient-to-r from-gray-900 to-gray-800
+          border border-gray-700 hover:border-indigo-500
+          shadow-lg hover:shadow-indigo-500/20
+          ${isDragging ? "opacity-50 scale-95" : "opacity-100"}
+          hover:bg-gray-800
+        `}
       >
-        <File className="h-5 w-5 text-gray-500" />
-        <span className="truncate">{name}</span>
-        <ItemMenu
-          type="file"
-          onShare={handleShare}
-          onDelete={onDelete}
-          onDownload={handleDownload}
-          onRename={() => setIsRenaming(true)}
-        />
+        <File className="h-6 w-6 text-indigo-400 flex-shrink-0" />
+        <span className="truncate text-gray-200 text-lg font-normal">{name}</span>
+        <div className="absolute right-4 top-[20%] transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <ItemMenu
+            type="file"
+            onShare={handleShare}
+            onDelete={onDelete}
+            onDownload={handleDownload}
+            onRename={() => setIsRenaming(true)}
+          />
+        </div>
       </div>
+
 
       <RenameDialog
         isOpen={isRenaming}
