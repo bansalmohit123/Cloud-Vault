@@ -27,3 +27,33 @@ const subscription = {
 
   return subscription?.plan === "premium"
 }
+
+
+export async function createSubscription() {
+  const session = await auth();
+  const userid = session?.user?.id;
+
+  if (!userid) {
+    throw new Error("User is not authenticated.");
+  }
+
+  try {
+    const result = await prisma.subscription.create({
+      data: {
+        userId: userid,
+        name: "Premium Plan",
+        deadline: new Date(new Date().setMonth(new Date().getMonth() + 1)), // Deadline set to 1 month from now
+        uploadLimit: 5 * 1024, // 5 GB (in MB)
+      },
+    });
+
+    return {
+      plan: "premium",
+      subscriptionId: result.id,
+    };
+  } catch (error) {
+    console.error("Error creating subscription:", error);
+    throw new Error("Failed to create subscription.");
+  }
+}
+
