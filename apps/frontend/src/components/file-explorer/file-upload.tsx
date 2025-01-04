@@ -47,7 +47,7 @@ export function FileUpload({ currentPath, onFileUploaded }: FileUploadProps) {
       if (acceptedFiles.length > 0) {
         setIsUploading(true);
         try {
-          if (!isPremium && e.target.files[0].size > 5 * 1024 * 1024) {
+          if (!isPremium && acceptedFiles[0].size > 5 * 1024 * 1024) {
             toast({
               title: "Subscription Required",
               description: "Please subscribe to upload files larger than 5 MB",
