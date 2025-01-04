@@ -3,35 +3,34 @@ import { auth} from "../../auth"
 import { prisma } from "./prisma"
 
 export async function getSubscriptionStatus() {
-  // const session = await auth()
+  const session = await auth()
   
-  // if (!session?.user?.email) {
-  //   return false
-  // }
+  if (!session?.user?.id) {
+    return false
+  }
 
-//   const subscription = await prisma.subscription.findFirst({
-//     where: {
-//       user: {
-//         email: session.user.email
-//       },
-//       active: true,
-//       endDate: {
-//         gt: new Date()
-//       }
-//     }
-//   })
-const subscription = {
-    plan : "premium"
-}
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      userId: session.user.id,
+    }
+  })
 
+  if (!subscription) {
+    return false
+  }
+  if(subscription?.deadline !== null && subscription?.deadline < new Date()) {
+    return false
+  }
 
-  return subscription?.plan === "premium"
+  return true
 }
 
 
 export async function createSubscription() {
   const session = await auth();
+  console.log("session", session)
   const userid = session?.user?.id;
+  console.log("userid", userid)
 
   if (!userid) {
     throw new Error("User is not authenticated.");
@@ -43,11 +42,11 @@ export async function createSubscription() {
         userId: userid,
         name: "Premium Plan",
         deadline: new Date(new Date().setMonth(new Date().getMonth() + 1)), // Deadline set to 1 month from now
-        uploadLimit: 5 * 1024, // 5 GB (in MB)
       },
     });
 
     return {
+      ok : true,
       plan: "premium",
       subscriptionId: result.id,
     };

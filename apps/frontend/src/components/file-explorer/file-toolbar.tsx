@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { uploadFile } from "@/lib/upload"
+import { useSubscription } from "../subscription-provider"
 
 interface FileToolbarProps {
   currentPath: string;
@@ -38,6 +39,7 @@ export function FileToolbar({ currentPath, onCreateFolder, onFileUploaded }: Fil
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const { toast } = useToast()
+  const { isPremium } = useSubscription()
 
   const handleCreateFolder = () => {
     if (newFolderName.trim()) {
@@ -51,6 +53,18 @@ export function FileToolbar({ currentPath, onCreateFolder, onFileUploaded }: Fil
     if (e.target.files && e.target.files.length > 0) {
       setIsUploading(true)
       try {
+        if (!isPremium && e.target.files[0].size > 5 * 1024 * 1024) {
+          toast({
+            title: "Subscription Required",
+            description: "Please subscribe to upload files larger than 5 MB",
+            variant: "default",
+          });
+          setIsUploading(false);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          return;
+        }
         try {
           const fileRecord = await uploadFile(e.target.files[0], currentPath);
           onFileUploaded(fileRecord);

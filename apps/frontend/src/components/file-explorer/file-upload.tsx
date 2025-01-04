@@ -7,6 +7,7 @@ import { uploadFile } from "@/lib/upload";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useSubscription } from "@/components/subscription-provider";
 
 interface FileUploadProps {
   currentPath: string;
@@ -39,12 +40,25 @@ export function FileUpload({ currentPath, onFileUploaded }: FileUploadProps) {
   const [files, setFiles] = useState<File[]>([]);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isPremium } = useSubscription();
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         setIsUploading(true);
         try {
+          if (!isPremium && e.target.files[0].size > 5 * 1024 * 1024) {
+            toast({
+              title: "Subscription Required",
+              description: "Please subscribe to upload files larger than 5 MB",
+              variant: "default",
+            });
+            setIsUploading(false);
+            if (fileInputRef.current) {
+              fileInputRef.current.value = "";
+            }
+            return;
+          }
             try {
             const fileRecord = await uploadFile(acceptedFiles[0], currentPath);
             onFileUploaded(fileRecord);

@@ -4,13 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 dotenv.config();
 
 const razorpay = new Razorpay({
-  key_id: "process.env.RAZORPAY_KEY_ID",
-  key_secret: "process.env.RAZORPAY_KEY_SECRET",
+  key_id: process.env.RAZORPAY_KEY_ID as string,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("Request received",request);
     const { amount } = await request.json();
+    console.log(amount);
     const order = await razorpay.orders.create({
       amount,
       currency: "INR",

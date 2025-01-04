@@ -14,6 +14,10 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
+import { createSubscription } from "@/lib/subscription";
+import { redirect } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+
 
 declare global {
   interface Window {
@@ -24,9 +28,10 @@ declare global {
 export default function PremiumPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const { isPremium } = useSubscription();
+  const { isPremium, setIsPremium } = useSubscription();
   const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const { toast } = useToast();
 
   // Ensure Razorpay script is loaded
   useEffect(() => {
@@ -42,11 +47,18 @@ export default function PremiumPage() {
 
   const handleSubscribe = async () => {
     setLoading(true);
-    
-      if (response.ok) {
-        router.refresh();
+    try {
+      const response = await createSubscription();
+      console.log("response", response)
+      if (!response) {
+        toast({ title: "Error", description: "Money have been deducted but failed in updating db, please contact support asap!, " });
+        return;
       }
+      toast({ title: "Success", description: "Subscription created successfully" });
+      setIsPremium(true);
+      router.push("/");
     } catch (error) {
+      toast({ title: "Error", description: "Money have been deducted but failed in updating db, please contact support asap!, " });
       console.error(error);
     }
     setLoading(false);
@@ -93,6 +105,7 @@ export default function PremiumPage() {
       rzp.open();
       await handleSubscribe();
     } catch (error) {
+      toast({ title: "Error", description: "Failed to create payment" });
       console.error(error);
     }
     setPaymentLoading(false);
