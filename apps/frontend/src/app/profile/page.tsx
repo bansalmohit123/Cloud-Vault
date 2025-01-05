@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-// import { Progress } from "@/components/ui/progress"
 import { FileIcon, CreditCard, HardDrive } from 'lucide-react'
 import { usermodel } from "@/lib/upload"
 import { SubcriptionModel } from "@/lib/subscription"
@@ -38,20 +37,18 @@ export default function ProfilePage() {
   if (!mounted || !user || !subscription) {
     return (
         <div className="flex items-center justify-center h-screen">
-            <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-blue-400 border-dashed rounded-full animate-spin"></div>
         </div>
     );
-}
-
+  }
 
   const filesCount = user.filesCount
   const memoryUsage = (user.uploads / (1024 * 1024 * 1024)).toFixed(5) // GB
   const maxMemory = isPremium ? 50 : 1 // GB
-  // const storagePercentage = (memoryUsage / maxMemory) * 100
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg shadow-lg p-8 mb-8">
+      <div className="bg-gradient-to-r from-purple-900 to-pink-900 rounded-lg shadow-lg p-8 mb-8">
         <div className="flex items-center space-x-6">
           <Avatar className="h-24 w-24 ring-4 ring-white">
             <AvatarImage src={session?.user?.image || ''} alt={session?.user?.name || ''} />
@@ -65,45 +62,43 @@ export default function ProfilePage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Files</CardTitle>
-            <FileIcon className="h-5 w-5 text-blue-500" />
+            <FileIcon className="h-5 w-5 text-blue-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-600">{filesCount}</div>
+            <div className="text-3xl font-bold text-blue-400">{filesCount}</div>
             <p className="text-sm text-muted-foreground mt-2">
               Total files in your CloudDrive
             </p>
           </CardContent>
         </Card>
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Subscription</CardTitle>
-            <CreditCard className="h-5 w-5 text-green-500" />
+            <CreditCard className="h-5 w-5 text-green-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">{isPremium ? 'Premium' : 'Free'}</div>
+            <div className="text-3xl font-bold text-green-400">{isPremium ? 'Premium' : 'Free'}</div>
             <p className="text-sm text-muted-foreground mt-2">
               Your current plan
             </p>
           </CardContent>
         </Card>
-        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gray-800 border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-lg font-semibold">Storage Used</CardTitle>
-            <HardDrive className="h-5 w-5 text-purple-500" />
+            <HardDrive className="h-5 w-5 text-purple-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-600">{memoryUsage} GB</div>
+            <div className="text-3xl font-bold text-purple-400">{memoryUsage} GB</div>
             <p className="text-sm text-muted-foreground mt-2">
               of {maxMemory} GB used
             </p>
-            {/* <Progress value={storagePercentage} className="mt-4" /> */}
           </CardContent>
         </Card>
       </div>
     </div>
   )
 }
-

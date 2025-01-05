@@ -69,18 +69,18 @@ export default function PremiumPage() {
     try {
       const response = await fetch("/api/createOrder", {
         method: "POST",
-        body: JSON.stringify({ amount: 299 * 100 }),
+        body: JSON.stringify({ amount: 299 * 100 }), // Amount in paisa
         headers: {
           "Content-Type": "application/json",
         },
       });
       const data = await response.json();
-
+  
       // Check if Razorpay object is available
       if (!window.Razorpay) {
         throw new Error("Razorpay SDK not loaded");
       }
-
+  
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
@@ -88,9 +88,17 @@ export default function PremiumPage() {
         name: "CloudDrive",
         description: "Premium Subscription",
         order_id: data.orderId,
-        handler: async (response: any) => {
-          console.log("Payment successful", response);
-          
+        handler: async (paymentResponse: any) => {
+          try {
+            console.log("Payment successful", paymentResponse);
+            
+            // Only update subscription status in the database after successful payment
+            await handleSubscribe();
+            toast({ title: "Success", description: "Payment successful, subscription updated!" });
+          } catch (error) {
+            toast({ title: "Error", description: "Failed to update subscription after payment." });
+            console.error(error);
+          }
         },
         prefill: {
           name: session?.user?.name || "Your Name",
@@ -100,16 +108,17 @@ export default function PremiumPage() {
           color: "#3399cc",
         },
       };
-
+  
       const rzp = new window.Razorpay(options);
       rzp.open();
-      await handleSubscribe();
     } catch (error) {
       toast({ title: "Error", description: "Failed to create payment" });
       console.error(error);
+    } finally {
+      setPaymentLoading(false);
     }
-    setPaymentLoading(false);
   };
+  
 
   if (isPremium) {
     return (
