@@ -13,7 +13,6 @@ import { getAllFoldersByOwner, createFolder } from "@/lib/folder";
 import { url } from "inspector";
 import { deleteFile, renamefile, deleteFolder, renameFolder } from "@/lib/file-actions";
 import { useToast } from "@/hooks/use-toast";
-import { Toast } from "../ui/toast";
 
 type File = { 
   id: string; 
@@ -22,6 +21,8 @@ type File = {
   parentId?: string | null; 
   subfolders?: File[]; 
   url? : string | undefined;
+  filetype?: string;
+  size?: number;
 };
 
 export function FileExplorer() {
@@ -30,6 +31,7 @@ export function FileExplorer() {
   const [fileStructure, setFileStructure] = useState<{ [key: string]: File[] }>({});
   const [files, setFiles] = useState<File[]>([]);
   const { data: session } = useSession();
+  const { toast } = useToast();
 
   if (!session) {
     return redirect("/auth");
@@ -63,7 +65,10 @@ export function FileExplorer() {
               type: "file",
               parentId: folder.id,
               url: file.url, // Assuming file.url exists
+              filetype: file.type,
+              size: file.size,
             };
+            console.log("fileObj",fileObj);
             folderObj.subfolders.push(fileObj);
           });
         }
@@ -90,6 +95,8 @@ export function FileExplorer() {
         type: "file",
         parentId: null,
         url: file.url,
+        filetype: file.type,
+        size: file.size,
       }));
   
       const combinedRoot = [...rootFolders, ...rootFiles];
@@ -170,11 +177,11 @@ export function FileExplorer() {
       }));
 
       // Show a toast message
-      Toast({
+      toast({
         title: "File deleted",
       });
     } else {
-      Toast({
+      toast({
         title: "Error",
       });
     }
@@ -197,11 +204,11 @@ export function FileExplorer() {
         ),
       }));
 
-      Toast({
+      toast({
         title: "Success",
       });
     } else {
-      Toast({
+      toast({
         title: "Error",
       });
     }
@@ -216,9 +223,9 @@ export function FileExplorer() {
         ...prev,
         [currentPathKey]: prev[currentPathKey].filter(item => item.id !== folderId),
       }));
-      Toast({ title: "Success",});
+      toast({ title: "Success",});
     } else {
-      Toast({
+      toast({
         title: "Error",
         
       });
@@ -244,12 +251,12 @@ export function FileExplorer() {
             item.id === folderId ? { ...item, name: newName } : item
           ),
         }));
-        Toast({ title: "Success"});
+        toast({ title: "Success"});
       } else {
         throw new Error("Failed to rename folder");
       }
     } catch (error) {
-      Toast({
+      toast({
         title: "Error",
         
       });

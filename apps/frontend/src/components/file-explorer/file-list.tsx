@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-
+// import { RenderFileContent} from './render-file'
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
@@ -21,6 +21,8 @@ interface File {
   name: string;
   type: "file" | "folder";
   url?: string;
+  filetype?: string;
+  size?: number;
 }
 
 interface FileListProps {
@@ -196,6 +198,9 @@ export function FileList({
               type="file"
               path={currentPath}
               url={item.url as string}
+              folderId={currentPath[currentPath.length - 1]}
+              filetype= {item.type}
+              size = {item.size as number}
               onDelete={() => onDeleteFile(item.id)}
               onRename={(newName : any) => onRenameFile(item.id, newName)}
               />

@@ -79,7 +79,15 @@ export function FileToolbar({ currentPath, onCreateFolder, onFileUploaded }: Fil
             description: "Please subscribe to upload files larger than 1 GB",
             variant: "default",
             });
-          } else {
+          } 
+          else if(error instanceof Error && error.message === "Upload limit reached for today") {
+            toast({
+            title: "Upload Limit Reached",
+            description: "You have reached the upload limit for today",
+            variant: "default",
+            });
+          }
+          else {
             console.error("Upload error:", error);
             toast({
             title: "Error",
