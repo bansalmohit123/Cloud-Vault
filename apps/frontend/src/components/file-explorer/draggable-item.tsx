@@ -5,6 +5,7 @@ import { File } from "lucide-react";
 import { ItemMenu } from "./item-menu";
 import { RenameDialog } from "./rename-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { ShareDialog } from "./share-dialog";
 
 interface DraggableItemProps {
   id: string;
@@ -12,12 +13,14 @@ interface DraggableItemProps {
   type: "file";
   path: string[];
   url?: string;
+  folderId: string | null;
   onDelete: () => Promise<void>;
   onRename: (newName: string) => Promise<void>;
 }
 
-export function DraggableItem({ id, name, type, path, url, onDelete, onRename }: DraggableItemProps) {
+export function DraggableItem({ id, name, type, path, url, folderId, onDelete, onRename }: DraggableItemProps) {
   const [isRenaming, setIsRenaming] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const [{ isDragging }, dragRef] = useDrag(() => ({
@@ -28,23 +31,23 @@ export function DraggableItem({ id, name, type, path, url, onDelete, onRename }:
     }),
   }));
 
-  const handleShare = async () => {
-    if (url) {
-      try {
-        await navigator.clipboard.writeText(url);
-        toast({
-          title: "Link copied to clipboard",
-          description: "You can now share this file with others",
-        });
-      } catch (err) {
-        toast({
-          title: "Failed to copy link",
-          description: "Please try again",
-          variant: "destructive",
-        });
-      }
-    }
-  };
+  // const handleShare = async () => {
+  //   if (url) {
+  //     try {
+  //       await navigator.clipboard.writeText(url);
+  //       toast({
+  //         title: "Link copied to clipboard",
+  //         description: "You can now share this file with others",
+  //       });
+  //     } catch (err) {
+  //       toast({
+  //         title: "Failed to copy link",
+  //         description: "Please try again",
+  //         variant: "destructive",
+  //       });
+  //     }
+  //   }
+  // };
 
   const handleRename = async (newName: string) => {
     try {
@@ -94,7 +97,7 @@ export function DraggableItem({ id, name, type, path, url, onDelete, onRename }:
         <div className="absolute right-4 top-[20%] transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <ItemMenu
             type="file"
-            onShare={handleShare}
+            onShare={() => setIsShareDialogOpen(true)}
             onDelete={onDelete}
             onDownload={handleDownload}
             onRename={() => setIsRenaming(true)}
@@ -109,6 +112,13 @@ export function DraggableItem({ id, name, type, path, url, onDelete, onRename }:
         onRename={handleRename}
         currentName={name}
         type="file"
+      />
+       <ShareDialog 
+        isOpen={isShareDialogOpen} 
+        onClose={() => setIsShareDialogOpen(false)} 
+        fileUrl={url as string}
+        fileName={name}
+        folderId = {folderId}
       />
     </>
   );
