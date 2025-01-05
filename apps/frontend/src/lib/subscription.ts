@@ -56,3 +56,27 @@ export async function createSubscription() {
   }
 }
 
+export async function SubcriptionModel() {
+  const session = await auth();
+  const userid = session?.user?.id;
+
+  if (!userid) {
+    throw new Error("User is not authenticated.");
+  }
+
+  const subscription = await prisma.subscription.findFirst({
+    where: {
+      userId: userid,
+    },
+  });
+
+  if (!subscription) {
+    return {
+      plan: "free",
+      subscriptionId: null
+  }
+}
+
+  return subscription;
+}
+

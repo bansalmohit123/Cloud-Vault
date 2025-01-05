@@ -145,3 +145,22 @@ export const uploadFile = async (file: File, currentPath: string) => {
     throw error;
   }
 };
+
+
+export const usermodel = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: {
+      uploads: true,
+      files: {
+        select: { id: true },
+      },
+    },
+  })
+  if (!user) throw new Error("User not found")
+  
+  return {
+    uploads: user.uploads,
+    filesCount: user.files.length, // Count the number of files
+  }
+}

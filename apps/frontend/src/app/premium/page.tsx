@@ -69,7 +69,7 @@ export default function PremiumPage() {
     try {
       const response = await fetch("/api/createOrder", {
         method: "POST",
-        body: JSON.stringify({ amount: 1 * 100 }),
+        body: JSON.stringify({ amount: 299 * 100 }),
         headers: {
           "Content-Type": "application/json",
         },
@@ -111,7 +111,7 @@ export default function PremiumPage() {
     setPaymentLoading(false);
   };
 
-  if (!isPremium) {
+  if (isPremium) {
     return (
       <div className="container mx-auto px-4 py-8">
         <Card className="max-w-2xl mx-auto">
