@@ -1,0 +1,90 @@
+service: Cloud-Vautl
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+  environment:
+    AWS_S3_BUCKET_NAME: ${env:AWS_S3_BUCKET_NAME}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+
+
+functions:
+  generatePresignedURLget:
+    handler: handler.generatePresignedURLget
+    events:
+      - http:
+          path: /get-file
+          method: post
+          cors: true
+
+  generatePresignedUrls:
+    handler: handler.generatePresignedUrls
+    events:
+      - http:
+          path: /presigned-urls
+          method: post
+          cors: true
+
+  completeUpload:
+    handler: handler.completeUpload
+    events:
+      - http:
+          path: /complete-upload
+          method: post
+          cors: true
+
+  renameFile:
+    handler: features.renameFileHandler
+    events:
+      - http:
+          path: /renameFile
+          method: post
+          cors: true
+
+  deleteFile:
+    handler: features.deletefile
+    events:
+      - http:
+          path: /deletefile
+          method: post
+          cors: true
+
+  deleteFolder:
+    handler: features.deleteFolderHandler
+    events:
+      - http:
+          path: /deleteFolder
+          method: post
+          cors: true
+
+  renameFolder:
+    handler: features.renameFolderHandler
+    events:
+      - http:
+          path: /renameFolder
+          method: post
+          cors: true
+
+
+resources:
+  Resources:
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:AWS_S3_BUCKET_NAME}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+              AllowedOrigins:
+                - "*"
+              MaxAge: 3000
