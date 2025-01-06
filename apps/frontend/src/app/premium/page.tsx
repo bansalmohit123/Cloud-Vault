@@ -209,7 +209,7 @@ export default function PremiumPage() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
               <div className="text-2xl font-bold text-center w-full">
-                999INR/month
+                299INR/month
               </div>
               <Button
                 onClick={handlePayment}
