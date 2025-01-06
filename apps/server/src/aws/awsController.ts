@@ -52,7 +52,6 @@ export const streamFolderAsZip = async (folderId: string, res: Response) => {
 export const downloadFolderHandler = async (req: Request, res: Response) => {
   const { folderId } = req.params;
   console.log("folderId", folderId);
-  
 
   try {
     await streamFolderAsZip(folderId, res);

@@ -1,0 +1,16 @@
+org: zsecure
+service: Cloud-Vault
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+
+
+functions:
+  api:
+    handler: dist/index.handler
+    events:
+      - cors : true
+      - httpApi: "*"
