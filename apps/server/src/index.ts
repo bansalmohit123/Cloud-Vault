@@ -28,6 +28,11 @@ app.get('/', (req, res) => {
     res.send('Hello, world!');
 });
 
+app.listen(3001, () => {
+    console.log('Server running on port 3001');
+}
+);
 
-export const handler = serverless(app);
+
+// export const handler = serverless(app);
 

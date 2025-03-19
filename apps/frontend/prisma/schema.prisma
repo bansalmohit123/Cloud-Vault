@@ -32,7 +32,7 @@ model Subscription {
   userId    String    @unique
 }
 
-model activity {
+model Activity {
   id       String   @id @default(cuid())
   upload  Int
   download Int
