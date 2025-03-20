@@ -2,6 +2,7 @@
 import axios from "axios";
 import { auth } from "../../auth";
 import { prisma } from "./prisma";
+import { checkUploadLimit, rollbackUpload } from "./limit";
 
 interface Part {
   ETag: string;
@@ -9,7 +10,13 @@ interface Part {
 }
 
 export const uploadFile = async (file: File, currentPath: string) => {
+
   try {
+    const isAllowed = await checkUploadLimit();
+    if (!isAllowed) {
+      throw new Error("Upload limit reached for today");
+      return;
+    }
     // Get current user
     const session = await auth();
     if (!session?.user?.email) {
@@ -121,10 +128,15 @@ export const uploadFile = async (file: File, currentPath: string) => {
       ownerId: user.id,
       url: fileUrl,
     };
+    // console.log("currentFolderId",currentFolderId);
+    // console.log("fileData",fileData);
 
     if (currentFolderId) {
       fileData.folderId = currentFolderId;
     }
+    // else{
+    //   fileData.folderId = "";
+    // }
 
     const fileRecord = await prisma.file.create({
       data: fileData,
@@ -141,6 +153,7 @@ export const uploadFile = async (file: File, currentPath: string) => {
 
     return fileRecord;
   } catch (error) {
+    await rollbackUpload();
     console.error("Upload error:", error);
     throw error;
   }

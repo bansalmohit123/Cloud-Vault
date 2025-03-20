@@ -1,0 +1,511 @@
+{
+  "C:\\Users\\ASUS\\Desktop\\flutter Projects\\Cloud-Vault\\apps\\serverless": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.18",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeResolverProviders": {
+      "default-aws-credential-resolver": "<REDACTED>",
+      "env": {
+        "instance": {
+          "credentials": "<REDACTED>",
+          "serviceConfigFile": {
+            "service": "Cloud-Vautl",
+            "frameworkVersion": "3",
+            "provider": {
+              "name": "aws",
+              "runtime": "nodejs14.x",
+              "region": "us-east-1",
+              "environment": {
+                "AWS_S3_BUCKET_NAME": "cloud-ide-shas",
+                "AWS_ACCESS_KEY_ID": "<REDACTED>",
+                "AWS_SECRET_ACCESS_KEY": "<REDACTED>"
+              },
+              "stage": "dev"
+            },
+            "plugins": [
+              "serverless-offline"
+            ],
+            "functions": {
+              "generatePresignedURLget": {
+                "handler": "handler.generatePresignedURLget",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/get-file",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "generatePresignedUrls": {
+                "handler": "handler.generatePresignedUrls",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/presigned-urls",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "completeUpload": {
+                "handler": "handler.completeUpload",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/complete-upload",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "renameFile": {
+                "handler": "features.renameFileHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/renameFile",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "deleteFile": {
+                "handler": "features.deletefile",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/deletefile",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "deleteFolder": {
+                "handler": "features.deleteFolderHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/deleteFolder",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "renameFolder": {
+                "handler": "features.renameFolderHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/renameFolder",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              }
+            },
+            "resources": {
+              "Resources": {
+                "S3Bucket": {
+                  "Type": "AWS::S3::Bucket",
+                  "Properties": {
+                    "BucketName": "cloud-ide-shas",
+                    "CorsConfiguration": {
+                      "CorsRules": [
+                        {
+                          "AllowedHeaders": [
+                            "*"
+                          ],
+                          "AllowedMethods": [
+                            "GET",
+                            "POST",
+                            "PUT",
+                            "DELETE"
+                          ],
+                          "AllowedOrigins": [
+                            "*"
+                          ],
+                          "MaxAge": 3000
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "custom": {
+              "serverless-offline": {
+                "httpPort": 3000,
+                "useChildProcesses": true
+              }
+            }
+          },
+          "configFileDirPath": "C:\\Users\\ASUS\\Desktop\\flutter Projects\\Cloud-Vault\\apps\\serverless",
+          "config": {
+            "type": "env"
+          },
+          "options": {},
+          "stage": "dev",
+          "dashboard": null,
+          "logger": {
+            "namespace": "s:core:resolver:env",
+            "prefix": null,
+            "prefixColor": null
+          },
+          "_credentialsPromise": "<REDACTED>"
+        },
+        "resolvers": {}
+      },
+      "sls": {
+        "instance": {
+          "credentials": "<REDACTED>",
+          "serviceConfigFile": {
+            "service": "Cloud-Vautl",
+            "frameworkVersion": "3",
+            "provider": {
+              "name": "aws",
+              "runtime": "nodejs14.x",
+              "region": "us-east-1",
+              "environment": {
+                "AWS_S3_BUCKET_NAME": "cloud-ide-shas",
+                "AWS_ACCESS_KEY_ID": "<REDACTED>",
+                "AWS_SECRET_ACCESS_KEY": "<REDACTED>"
+              },
+              "stage": "dev"
+            },
+            "plugins": [
+              "serverless-offline"
+            ],
+            "functions": {
+              "generatePresignedURLget": {
+                "handler": "handler.generatePresignedURLget",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/get-file",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "generatePresignedUrls": {
+                "handler": "handler.generatePresignedUrls",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/presigned-urls",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "completeUpload": {
+                "handler": "handler.completeUpload",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/complete-upload",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "renameFile": {
+                "handler": "features.renameFileHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/renameFile",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "deleteFile": {
+                "handler": "features.deletefile",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/deletefile",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "deleteFolder": {
+                "handler": "features.deleteFolderHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/deleteFolder",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              },
+              "renameFolder": {
+                "handler": "features.renameFolderHandler",
+                "events": [
+                  {
+                    "http": {
+                      "path": "/renameFolder",
+                      "method": "post",
+                      "cors": true
+                    }
+                  }
+                ]
+              }
+            },
+            "resources": {
+              "Resources": {
+                "S3Bucket": {
+                  "Type": "AWS::S3::Bucket",
+                  "Properties": {
+                    "BucketName": "cloud-ide-shas",
+                    "CorsConfiguration": {
+                      "CorsRules": [
+                        {
+                          "AllowedHeaders": [
+                            "*"
+                          ],
+                          "AllowedMethods": [
+                            "GET",
+                            "POST",
+                            "PUT",
+                            "DELETE"
+                          ],
+                          "AllowedOrigins": [
+                            "*"
+                          ],
+                          "MaxAge": 3000
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "custom": {
+              "serverless-offline": {
+                "httpPort": 3000,
+                "useChildProcesses": true
+              }
+            }
+          },
+          "configFileDirPath": "C:\\Users\\ASUS\\Desktop\\flutter Projects\\Cloud-Vault\\apps\\serverless",
+          "config": {
+            "type": "sls"
+          },
+          "options": {},
+          "stage": "dev",
+          "dashboard": null,
+          "logger": {
+            "namespace": "s:core:resolver:sls",
+            "prefix": null,
+            "prefixColor": null
+          },
+          "_credentialsPromise": "<REDACTED>"
+        },
+        "resolvers": {}
+      }
+    },
+    "composeServiceName": null,
+    "servicePath": "C:\\Users\\ASUS\\Desktop\\flutter Projects\\Cloud-Vault\\apps\\serverless",
+    "serviceConfigFileName": "serverless.yaml",
+    "service": {
+      "service": "Cloud-Vautl",
+      "frameworkVersion": "3",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs14.x",
+        "region": "us-east-1",
+        "environment": {
+          "AWS_S3_BUCKET_NAME": "cloud-ide-shas",
+          "AWS_ACCESS_KEY_ID": "<REDACTED>",
+          "AWS_SECRET_ACCESS_KEY": "<REDACTED>"
+        },
+        "stage": "dev"
+      },
+      "plugins": [
+        "serverless-offline"
+      ],
+      "functions": {
+        "generatePresignedURLget": {
+          "handler": "handler.generatePresignedURLget",
+          "events": [
+            {
+              "http": {
+                "path": "/get-file",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "generatePresignedUrls": {
+          "handler": "handler.generatePresignedUrls",
+          "events": [
+            {
+              "http": {
+                "path": "/presigned-urls",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "completeUpload": {
+          "handler": "handler.completeUpload",
+          "events": [
+            {
+              "http": {
+                "path": "/complete-upload",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "renameFile": {
+          "handler": "features.renameFileHandler",
+          "events": [
+            {
+              "http": {
+                "path": "/renameFile",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "deleteFile": {
+          "handler": "features.deletefile",
+          "events": [
+            {
+              "http": {
+                "path": "/deletefile",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "deleteFolder": {
+          "handler": "features.deleteFolderHandler",
+          "events": [
+            {
+              "http": {
+                "path": "/deleteFolder",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        },
+        "renameFolder": {
+          "handler": "features.renameFolderHandler",
+          "events": [
+            {
+              "http": {
+                "path": "/renameFolder",
+                "method": "post",
+                "cors": true
+              }
+            }
+          ]
+        }
+      },
+      "resources": {
+        "Resources": {
+          "S3Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "cloud-ide-shas",
+              "CorsConfiguration": {
+                "CorsRules": [
+                  {
+                    "AllowedHeaders": [
+                      "*"
+                    ],
+                    "AllowedMethods": [
+                      "GET",
+                      "POST",
+                      "PUT",
+                      "DELETE"
+                    ],
+                    "AllowedOrigins": [
+                      "*"
+                    ],
+                    "MaxAge": 3000
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "custom": {
+        "serverless-offline": {
+          "httpPort": 3000,
+          "useChildProcesses": true
+        }
+      }
+    },
+    "serviceRawFile": "service: Cloud-Vautl\r\nframeworkVersion: '3'\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs14.x\r\n  region: us-east-1\r\n  environment:\r\n    AWS_S3_BUCKET_NAME: ${env:AWS_S3_BUCKET_NAME}\r\n    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}\r\n    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}\r\n\r\nplugins:\r\n  - serverless-offline # Added plugin for local testing    \r\n\r\n\r\nfunctions:\r\n  generatePresignedURLget:\r\n    handler: handler.generatePresignedURLget\r\n    events:\r\n      - http:\r\n          path: /get-file\r\n          method: post\r\n          cors: true\r\n\r\n  generatePresignedUrls:\r\n    handler: handler.generatePresignedUrls\r\n    events:\r\n      - http:\r\n          path: /presigned-urls\r\n          method: post\r\n          cors: true\r\n\r\n  completeUpload:\r\n    handler: handler.completeUpload\r\n    events:\r\n      - http:\r\n          path: /complete-upload\r\n          method: post\r\n          cors: true\r\n\r\n  renameFile:\r\n    handler: features.renameFileHandler\r\n    events:\r\n      - http:\r\n          path: /renameFile\r\n          method: post\r\n          cors: true\r\n\r\n  deleteFile:\r\n    handler: features.deletefile\r\n    events:\r\n      - http:\r\n          path: /deletefile\r\n          method: post\r\n          cors: true\r\n\r\n  deleteFolder:\r\n    handler: features.deleteFolderHandler\r\n    events:\r\n      - http:\r\n          path: /deleteFolder\r\n          method: post\r\n          cors: true\r\n\r\n  renameFolder:\r\n    handler: features.renameFolderHandler\r\n    events:\r\n      - http:\r\n          path: /renameFolder\r\n          method: post\r\n          cors: true\r\n\r\n\r\nresources:\r\n  Resources:\r\n    S3Bucket:\r\n      Type: AWS::S3::Bucket\r\n      Properties:\r\n        BucketName: ${env:AWS_S3_BUCKET_NAME}\r\n        CorsConfiguration:\r\n          CorsRules:\r\n            - AllowedHeaders:\r\n                - \"*\"\r\n              AllowedMethods:\r\n                - GET\r\n                - POST\r\n                - PUT\r\n                - DELETE\r\n              AllowedOrigins:\r\n                - \"*\"\r\n              MaxAge: 3000\r\n\r\ncustom:\r\n  serverless-offline:\r\n    httpPort: 3000 # Set custom port for local server\r\n    useChildProcesses: true # Isolates functions for better testing",
+    "command": [
+      "offline"
+    ],
+    "options": {},
+    "error": {
+      "message": "The Serverless version (4.4.18) does not satisfy the \"frameworkVersion\" (3) in serverless.yaml",
+      "stack": "ServerlessError2: The Serverless version (4.4.18) does not satisfy the \"frameworkVersion\" (3) in serverless.yaml\n    at Service.loadServiceFileParam (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:926:9328)\n    at Service.load (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:926:6970)\n    at Serverless.init (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:932:9951)\n    at runFramework (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:980:1353)\n    at async route (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:1010:14772)\n    at async Object.run2 [as run] (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:1010:15173)\n    at async run3 (file:///C:/Users/ASUS/.serverless/releases/4.4.18/package/dist/sf-core.js:1010:16435)",
+      "code": "FRAMEWORK_VERSION_MISMATCH"
+    },
+    "params": {},
+    "machineId": "a2b003c29663e7a08cb64c3bbee59712",
+    "stage": "dev",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "e6dd6647-f817-4470-9f11-6defbff4e2ed",
+    "orgName": "mohit27",
+    "userId": "ysGVJf1ms0t6X9dKld",
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "mohit27",
+    "subscription": null,
+    "userEmail": "bt22cse200@iiitn.ac.in",
+    "serviceProviderAwsRegion": "us-east-1",
+    "serviceProviderAwsCredentials": "<REDACTED>",
+    "serviceProviderAwsAccountId": "891377063057",
+    "projectType": "traditional",
+    "versionSf": "4.4.18",
+    "serviceUniqueId": null,
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}

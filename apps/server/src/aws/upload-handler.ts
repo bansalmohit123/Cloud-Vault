@@ -12,6 +12,31 @@ import s3Client  from "../s3client";
 
 dotenv.config();
 
+export const generatePresignedURLget = async (req, res) => {
+  try {
+    const { fileName, folderId, expiresIn } = req.body;
+
+    if (!fileName) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
+    const key = folderId ? `${folderId}/${fileName}` : fileName;
+
+    const presignedUrl = await getSignedUrl(
+      s3Client,
+      new GetObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: key,
+      }),
+      { expiresIn: expiresIn || 7200 }
+    );
+
+    return res.json({ presignedUrl });
+  } catch (error) {
+    console.error("Error generating presigned URL:", error);
+    res.status(500).json({ error: "Error generating presigned URL" });
+  }
+}
 
 export const generatePresignedUrls = async (req, res) => {
   try {

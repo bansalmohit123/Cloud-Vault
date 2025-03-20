@@ -46,3 +46,16 @@ export const completeMultipartUpload = async (
 };
 
 
+
+export const generatePresignedURLget = async (
+    fileName: string,
+    folderId: string,
+    expiresIn: number
+) => {
+    const response = await axios.post(
+        `${SERVER_URL}/api/get-file`,
+        { fileName, folderId, expiresIn }
+    );
+    return response.data.presignedUrl;
+}
+

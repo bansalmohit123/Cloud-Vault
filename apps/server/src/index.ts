@@ -5,25 +5,18 @@ import router from './aws/upload-routes';
 import featuresrouter from './aws/features-routes';
 import { downloadFolderHandler } from './aws/awsController';
 import bodyParser from 'body-parser';
+import serverless from 'serverless-http';
 const app = express();
-const port = 3001;
+
 app.use(express.json());
-app.use(cors());
+app.use(express.urlencoded({ extended: false }));
+app.use(cors({
+    origin: '*'
+}));
 
 // Middleware
 app.use(bodyParser.json());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(200).json({});
-  }
-  next();
-});
+
 
 app.use("/api", router);
 // app.use('/aws', awsRoutes);
@@ -35,9 +28,11 @@ app.get('/', (req, res) => {
     res.send('Hello, world!');
 });
 
+app.listen(3001, () => {
+    console.log('Server running on port 3001');
+}
+);
 
 
+// export const handler = serverless(app);
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
