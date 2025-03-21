@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import dotenv from 'dotenv';
+dotenv.config();
 // import { RenderFileContent} from './render-file'
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -57,6 +59,10 @@ export function FileList({
 
   const handleFileClick = (file: File) => {
     if (file.type === "file" && file.url) {
+      const lastPart = file.url.substring(file.url.lastIndexOf('/') + 1);
+      // console.log(lastPart);
+      file.url =  `${process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN_NAME}`+lastPart;
+      // console.log(file.url)
       setSelectedFile(file);
       setPageNumber(1); // Reset to first page when opening a new file
       setScale(1);
@@ -68,6 +74,8 @@ export function FileList({
       });
     }
   };
+
+
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);

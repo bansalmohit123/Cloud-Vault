@@ -31,7 +31,14 @@ model Subscription {
   updatedAt DateTime  @updatedAt
   userId    String    @unique
 }
-
+model Activity {
+  id       String   @id @default(cuid())
+  upload  Int
+  download Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @unique
+}
 model Account {
   userId            String
   type              String
